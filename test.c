@@ -1,73 +1,51 @@
 #include <stdio.h>
-#include <stdlib.h>
 
-struct node
+int max(int a, int b)
 {
-    int data;
-    int priority;
-    struct node *next;
-} * front, *temp;
-
-void display(struct node *temp)
-{
-    while (temp != NULL)
-    {
-        printf("%d\t", temp->data);
-        temp = temp->next;
-    }
+    return (a > b) ? a : b;
 }
 
-struct node*enqueue(int value, int priority)
+int knapsack(int capacity, int n, int weight[], int value[])
 {
-
-    struct node *newnode;
-
-    newnode = (struct node *)malloc(sizeof(struct node));
-    newnode->data = value;
-    newnode->priority = priority;
-
-    if (front == NULL)
-    {
-        newnode->next = NULL;
-        front = temp = newnode;
-    }
-    else
-    {
-        if (temp->priority > newnode->priority)
-        {
-            temp->next = newnode;
-            newnode->next = NULL;
-            ;
-        }
-        else if (temp->priority < newnode->priority)
-        {
-            newnode->next = temp;
-            temp = newnode;
-            
-        }
-    }
-    return newnode;
-}
-
-int main()
-
-{
-    int value, priority, i;
-    struct node * queue;
-
     
-
-    for (i = 0; i < 3; i++)
+    int i, item;
+    int knap[n + 1][capacity + 1];
+    for(i = 0; i <= n; i++)
     {
-        printf("\nEnter the value: ");
-        scanf("%d", &value);
-        printf("Enter the priority: ");
-        scanf("%d", &priority);
-        queue = enqueue(value, priority);
+        for(item = 0; item <= capacity; item++)
+        {
+            if(i == 0 || item == 0)
+                knap[i][item] = 0;
+            else if(weight[i - 1] <= item)
+                knap[i][item] = max(value[i - 1] + knap[i - 1][item - weight[i - 1]], knap[i - 1][item]);
+            else
+                knap[i][item] = knap[i - 1][item];            
+        }
     }
+    return knap[n][capacity];
+}
 
-    printf("\nQueue is :");
-    printf("\n");
-    display(queue);
-    return 0;
+void main()
+{
+    int weight[20], value[20];
+    int i, n, capacity, profit;
+
+    printf("Enter the capacity of the knapsack:");
+    scanf("%d", &capacity);
+
+    printf("Enter the number of items:");
+    scanf("%d", &n);    
+
+    printf("Enter weight and value of each product:");
+    for(i = 0; i < n; i++)
+    {
+        printf("Weight[%d]:", i);
+        scanf("%d", &weight[i]);
+        printf("Value[%d]:", i);
+        scanf("%d", &value[i]);
+    }
+ 
+    profit = knapsack(capacity, n, weight, value);
+
+    printf("Profit:\t%d\n", profit);
 }
